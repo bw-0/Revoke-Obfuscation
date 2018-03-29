@@ -2272,6 +2272,12 @@ http://www.leeholmes.com/blog/
 $scriptDir = Split-Path -Parent $myInvocation.MyCommand.Definition
 
 # Set whitelist directory and content and regex whitelist files. All scripts located in this directory and content/regex in these files will be automatically whitelisted by Measure-RvoObfuscation cmdlet.
+
+
+
+
+
+
 $whitelistDir         = "$scriptDir/Whitelist/Scripts_To_Whitelist"
 $whitelistRegexFile   = "$scriptDir/Whitelist/Regex_To_Whitelist.txt"
 $whitelistContentFile = "$scriptDir/Whitelist/Strings_To_Whitelist.txt"

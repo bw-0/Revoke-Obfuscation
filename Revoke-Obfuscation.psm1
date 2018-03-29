@@ -2278,10 +2278,6 @@ $scriptDir = Split-Path -Parent $myInvocation.MyCommand.Definition
 
 
 
-$whitelistDir         = "$scriptDir/Whitelist/Scripts_To_Whitelist"
-$whitelistRegexFile   = "$scriptDir/Whitelist/Regex_To_Whitelist.txt"
-$whitelistContentFile = "$scriptDir/Whitelist/Strings_To_Whitelist.txt"
-
 if (Test-Path (Join-Path $scriptDir 'Whitelist'))
 {
     # Register FileSystemWatcher object events to automatically run Update-RvoWhitelist whenever any files in .\Whitelist\ are created or modified.

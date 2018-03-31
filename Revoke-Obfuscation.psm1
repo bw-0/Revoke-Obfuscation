@@ -277,6 +277,7 @@ http://www.leeholmes.com/blog/
                     }
                 }
             }
+
             "Path" {
                 # Read in file path(s) as an expression.
                 foreach ($curPath in $executionContext.SessionState.Path.GetResolvedProviderPathFromProviderPath($Path, 'FileSystem'))
@@ -287,6 +288,7 @@ http://www.leeholmes.com/blog/
                     }
                 }
             }
+
             "LiteralPath" {
                 # Read in file path(s) as an expression.
                 $scriptContentArray += [PSCustomObject] @{
@@ -319,6 +321,7 @@ http://www.leeholmes.com/blog/
                     $scriptContentArray += [PSCustomObject] @{
                         Source = $curGetRvoScriptBlockResult
                         Content = [System.String] $curGetRvoScriptBlockResult.ScriptBlock
+                        Hash = $curGetRvoScriptBlockResult.hash
                     }
                 }
             }
@@ -355,7 +358,11 @@ http://www.leeholmes.com/blog/
             
             $counter++
 
-            # Compute hash for input $scriptContent.
+            # Compute hash for input $scriptContent if not already provided.
+            if (!$_.hash){
+                $hash = get-hash $scriptContent
+            }
+            
             $ms = New-Object System.IO.MemoryStream
             $sw = New-Object System.IO.StreamWriter $ms
             $sw.Write($scriptContent)
@@ -1354,12 +1361,15 @@ http://www.leeholmes.com/blog/
                 $reassembled = [System.Boolean] $false
             }
 
+            $hash = get-hash $mergedScript
+            
             # Build final PSCustomObject to house reassembled script blocks and corresponding metadata for each script ID.
             [PSCustomObject] @{
                 PSTypeName            = "RevokeObfuscation.RvoScriptBlockResult"
                 ScriptBlock           = [System.String] $mergedScript
                 ScriptBlockLength     = [System.Uint32] ($mergedScript -Join '').Length
                 ScriptBlockId         = [System.String] $scriptBlockId
+                Hash                  = [System.String] $hash
                 TimeCreated           = [System.DateTime] $timeCreated
                 Id                    = [System.UInt16] $eid
                 HostName              = [System.String] $hostname
@@ -1377,6 +1387,15 @@ http://www.leeholmes.com/blog/
     $UniqueScriptBlocks = $null
 }
 
+function get-hash ($scriptContent) {
+    # Compute hash for input $scriptContent.
+    $ms = New-Object System.IO.MemoryStream
+    $sw = New-Object System.IO.StreamWriter $ms
+    $sw.Write($scriptContent)
+    $sw.Flush()
+    $sw.BaseStream.Position = 0
+    return $hash = (Get-FileHash -InputStream $sw.BaseStream -Algorithm SHA256).Hash
+}
 
 # Get current directory of .ps1 script no matter the working directory.
 $scriptDir = Split-Path -Parent $myInvocation.MyCommand.Definition

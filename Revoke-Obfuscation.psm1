@@ -440,12 +440,13 @@ http://www.leeholmes.com/blog/
                 }
             }
 
+
             # Return result as a PSCustomObject.
             [PSCustomObject] @{
                 PSTypeName      = "RevokeObfuscation.Result"
                 ScriptContent   = [System.String] $scriptContent
                 Hash            = [System.String] $hash
-                Source          = [System.String] $source
+                Source          = [array] $source
                 Obfuscated      = [System.Boolean] $obfuscated
                 ObfuscatedScore = [System.Double] $obfuscatedScore
                 ResultFile      = [System.String] $resultFile
@@ -1337,8 +1338,8 @@ http://www.leeholmes.com/blog/
                 $timeCreated = [System.DateTime] $_.Group.TimeCreated[0]
                 $eid = [System.Uint16] $_.Group.Id[0]
                 $levelDisplayName = [System.String] $_.Group.LevelDisplayName[0]
-                $hostname = [System.String] $_.Group.HostName[0]
-                $instance = [System.String] $_.Group.Instance[0]
+                try{$hostname = [System.String] $_.Group.HostName[0]}catch{}
+                try{$instance = [System.String] $_.Group.Instance[0]}catch{}
             }
             else
             {
